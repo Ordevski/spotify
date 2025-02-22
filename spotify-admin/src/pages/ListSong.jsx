@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios';
 import { toast } from 'react-toastify';
-import { url } from '../App';
+import { deleteSong, getSongs } from '../services/SongService';
 
 const ListSong = () => {
     const [data, setData] = useState([]);
 
     const fetchSongs = async () => {
         try {
-
-            const response = await axios.get(`${url}/api/song/list`);
+            const response = await getSongs();
 
             if (response.data.success) {
                 setData(response.data.songs)
@@ -23,8 +21,7 @@ const ListSong = () => {
 
     const removeSong = async (id) => {
         try {
-
-            const response = await axios.delete(`${url}/api/song/remove/${id}`);
+            const response = await deleteSong(id);
 
             if (response.data.success) {
                 toast.success(response.data.message);
@@ -39,7 +36,8 @@ const ListSong = () => {
 
     useEffect(() => {
         fetchSongs();
-    }, [])
+    }, []);
+
     return (
         <div>
             <p>All Songs List</p>

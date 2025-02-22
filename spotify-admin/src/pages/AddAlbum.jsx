@@ -1,8 +1,7 @@
-import axios from "axios";
 import { useState } from "react";
-import { url } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
+import { addAlbum } from "../services/AlbumService";
 
 const AddAlbum = () => {
     const [image, setImage] = useState(false);
@@ -11,8 +10,33 @@ const AddAlbum = () => {
     const [desc, setDesc] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const onSubmitHandler = () => {
-        console.log("Not yet implemented!");
+    const onSubmitHandler = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const formData = new FormData();
+
+            formData.append('name', name);
+            formData.append('desc', desc);
+            formData.append('image', image);
+            formData.append('bgColor', color);
+
+            const response = await addAlbum(formData);
+
+            if(response.data.success) {
+                toast.success("Album Added");
+                setName("");
+                setDesc("");
+                setColor("#121212");
+                setImage(false);
+            } else {
+                toast.error("Something went wrong.");
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Album Add Error");
+        }
+        setLoading(false);
     }
 
     return loading ? (

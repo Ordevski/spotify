@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios';
 import { toast } from 'react-toastify';
-import { url } from '../App';
+import { getAlbums, deleteAlbum } from "../services/AlbumService";
 
 const ListAlbum = () => {
     const [data, setData] = useState([]);
 
     const loadAlbumData = async () => {
         try {
-            const response = await axios.get(`${url}/api/album/list`);
+            const response = await getAlbums();
     
             if(response.data.success) {
-                setAlbumData(response.data.albums);
+                setData(response.data.albums);
             }
                 
         } catch (error) {   
@@ -22,12 +21,11 @@ const ListAlbum = () => {
 
     const removeAlbum = async (id) => {
         try {
-
-            const response = await axios.delete(`${url}/api/album/remove/${id}`);
+            const response = await deleteAlbum(id);
 
             if (response.data.success) {
                 toast.success(response.data.message);
-                await fetchAlbums();
+                await loadAlbumData();
             }
 
         } catch (error) {

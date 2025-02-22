@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { url } from "../App";
 import { assets } from "../assets/assets";
 import { toast } from 'react-toastify';
+import { getAlbums } from "../services/AlbumService";
+import { addSong } from "../services/SongService";
 
 const AddAlbum = () => {
     const [song, setSong] = useState(false);
@@ -14,7 +15,7 @@ const AddAlbum = () => {
 
     const loadAlbumData = async () => {
         try {
-            const response = await axios.get(`${url}/api/album/list`);
+            const response = await getAlbums();
 
             if(response.data.success) {
                 setAlbumData(response.data.albums);
@@ -26,8 +27,34 @@ const AddAlbum = () => {
         }
     }
 
-    const onSubmitHandler = async () => {
-        console.log("Not yet implemented!")
+    const onSubmitHandler = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const formData = new FormData();
+
+            formData.append('name', name);
+            formData.append('desc', desc);
+            formData.append('image', image);
+            formData.append('audio', song);
+            formData.append('album', album);
+
+            const response = await addSong(formData);
+
+            if (response.data.success) {
+                toast.success("Song Added");
+                setName("");
+                setDesc("");
+                setImage(false);
+                setSong(false);
+            } else {
+                toast.error("Something went wrong");
+            }
+        } catch (error) {
+            console.log('error', error)
+            toast.error("Song Add Error");
+        }
+        setLoading(false);
     }
 
     useEffect(() => {
